@@ -1,0 +1,39 @@
+# Render Web Service definition for the F&O AI Trading Alert Agent.
+# Render requires the service to bind to $PORT; app.py does that via gunicorn.
+# The background WebSocket stream runs in a daemon thread inside the same
+# process (gunicorn --workers 1 avoids duplicate WS connections).
+#
+# Deploy: connect this repo in the Render dashboard, or use `render deploy`.
+# Set the secret env vars below in the Render dashboard (do NOT commit them).
+
+services:
+  - type: web
+    name: fo-trading-alert-agent
+    runtime: python
+    # Installs the native TA-Lib C library, then pip installs requirements.
+    buildCommand: ./build.sh
+    # Single worker: one process, one WS connection.
+    startCommand: gunicorn --workers 1 app:app
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Secrets (set these in the Render dashboard — values not committed here).
+      - key: UPSTOX_ACCESS_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      # Non-secret config with defaults baked into src/config.py; override here
+      # if needed.
+      - key: UPSTOX_INSTRUMENT_KEY
+        value: "NSE_INDEX|Nifty 50"
+      - key: MODEL_PATH
+        value: model.pkl
+      - key: LOG_LEVEL
+        value: INFO
+      # Optional OAuth helper creds (not needed at runtime).
+      - key: UPSTOX_API_KEY
+        sync: false
+      - key: UPSTOX_API_SECRET
+        sync: false

@@ -1,0 +1,11 @@
+# Development-only dependencies. Not deployed to Render.
+# - pytest: runs the pure-logic synthetic unit tests in tests/.
+# - grpcio-tools: used to (re)generate src/protobuf/market_data_v3_pb2.py from
+#   market_data_v3.proto via:
+#     python -m grpc_tools.protoc -I src/protobuf --python_out=src/protobuf \
+#         src/protobuf/market_data_v3.proto
+#   The committed runtime-built shim (market_data_v3_pb2.py) does NOT require
+#   grpcio-tools at runtime; this is only for regenerating from the real proto.
+
+pytest==8.3.3
+grpcio-tools==1.62.3

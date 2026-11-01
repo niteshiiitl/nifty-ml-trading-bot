@@ -1,0 +1,79 @@
+// Upstox Market Data Feed V3 protobuf schema (best-effort reconstruction).
+//
+// This file documents the expected structure of the Upstox V3 market data feed.
+// It should be replaced/verified with the official Upstox schema before live use:
+//   https://upstox.com/developer/api-documentation/v3/get-market-data-feed/
+// The committed runtime-built shim (market_data_v3_pb2.py) does NOT require this
+// file to be compiled; it builds an equivalent (simplified, wire-compatible for
+// ltpc mode) set of messages from the `protobuf` runtime library. Regenerating
+// from this proto via grpcio-tools produces a drop-in replacement.
+//
+// Field numbers below are a best-effort reconstruction and MUST be verified
+// against the live feed (we cannot test without real credentials). The
+// runtime shim uses identical field numbers for the fields it reads.
+
+syntax = "proto3";
+
+package upstox.marketdatafeederv3;
+
+// Subscription request mode. We use `ltpc` (only last-traded price + time needed
+// for 1-minute candles).
+enum RequestMode {
+  ltpc = 0;
+  full = 1;
+  option_greeks = 2;
+  quote = 3;
+}
+
+enum Type {
+  EMPTY = 0;
+  INIT = 1;
+  SUBSCRIBE = 2;
+  UNSUBSCRIBE = 3;
+  RESET = 4;
+  RESPONSE = 5;
+  ERROR = 6;
+}
+
+message DoubleValue {
+  double value = 1;
+}
+
+// Last Traded Price + Close (ltpc) payload — the only payload we consume.
+message LTPC {
+  double ltp = 1;   // last traded price
+  int64 ltt = 2;    // last traded time (epoch)
+  int64 ltq = 3;    // last traded quantity
+  double cp = 4;    // close price
+  DoubleValue iep = 5; // indicative executed price (optional)
+}
+
+message FullFeed {
+  // Full market depth payload (not used in ltpc mode).
+  // ... placeholder: see official Upstox schema for fields.
+}
+
+message OptionGreeks {
+  // Option greeks payload (not used in ltpc mode).
+  // ... placeholder: see official Upstox schema for fields.
+}
+
+message Feed {
+  oneof Feed {
+    LTPC ltpc = 2;
+    FullFeed full = 3;
+    OptionGreeks option_greeks = 4;
+  }
+}
+
+message MarketInfo {
+  // Market metadata (not used for candle aggregation).
+  // ... placeholder: see official Upstox schema for fields.
+}
+
+message FeedResponse {
+  Type type = 1;
+  map<string, Feed> feeds = 2;   // keyed by instrument key
+  int64 currentTs = 3;
+  MarketInfo marketInfo = 4;
+}

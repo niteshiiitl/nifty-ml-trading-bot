@@ -1,0 +1,40 @@
+# Secrets — never commit
+.env
+
+# Model artifacts
+model.pkl
+model_test.pkl
+
+# Training data cache (training-only, large)
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Test / tooling caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary probe / verification scratch files (root-level, prefixed with _)
+/_*.txt
+/_*.ps1
+/_*.py
+/_probe*
