@@ -140,6 +140,10 @@ alerter = TelegramAlerter(
 
 app = create_app(config.instrument_key, status)
 
+@app.route('/')
+def home():
+    return "Nifty 50 ML Trading Bot is Live and Running!", 200
+
 _started = False
 
 
